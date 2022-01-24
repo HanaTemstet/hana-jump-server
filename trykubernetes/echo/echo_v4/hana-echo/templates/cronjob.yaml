@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mongo-clean
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: mongo-clean
+            image: mongo
+            imagePullPolicy: IfNotPresent
+            command:
+            - /bin/sh
+            - -c
+            args: ["mongo $MONGODBURL --eval \"db.echos.deleteMany({ }) \"" ]
+            env:
+            - name: MONGODBURL
+              valueFrom:
+                secretKeyRef:
+                  name: secret-dburl
+                  key: mongodburl
+          restartPolicy: OnFailure

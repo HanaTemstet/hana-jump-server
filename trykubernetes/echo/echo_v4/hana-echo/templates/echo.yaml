@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: echo
+spec:
+  selector:
+    app: echo
+  ports:
+    - protocol: {{ .Values.echo_service.ports.protocol }}
+      port:  {{ .Values.echo_service.ports.port }}
+      targetPort: {{ .Values.echo_service.ports.targetPort }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echo
+  labels:
+    app: echo
+spec:
+  replicas: {{ .Values.echo_deployment.spec.replicas }}
+  selector:
+    matchLabels:
+      app: echo
+  template:
+    metadata:
+      labels:
+        app: echo
+    spec:
+      containers:
+      - name: echo
+        image: us-central1-docker.pkg.dev/echo-hana/echoappregistry/echo_hana:latest
+        ports:
+        - containerPort: {{ .Values.echo_deployment.spec.spec.containers.ports.containerPort }}        
+        env:
+          - name: MONGODBURL
+            valueFrom:
+              secretKeyRef:
+                name: secret-dburl
+                key: mongodburl
+        volumeMounts:
+        - name: config-vol
+          mountPath: "/app/config/default.yaml"
+          subPath: "default.yaml"
+          readOnly: true
+      volumes:
+      - name: config-vol
+        configMap:
+          name: mongodb-configmap
+

@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongodb-configmap
+data:
+  default.yaml: |-
+{{ .Files.Get "default.yaml" | indent 4 }}
+  # mongodburl: mongodb://root:password@my-mongo-mongodb-0.my-mongo-mongodb-headless.default.svc.cluster.local:27017,my-mongo-mongodb-1.my-mongo-mongodb-headless.default.svc.cluster.local:27017,my-mongo-mongodb-2.my-mongo-mongodb-headless.default.svc.cluster.local:27017/echo?authSource=admin&replicaSet=rs0
+

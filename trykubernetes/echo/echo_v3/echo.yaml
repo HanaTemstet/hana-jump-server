@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: echo
+spec:
+  selector:
+    app: echo
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echo
+  labels:
+    app: echo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: echo
+  template:
+    metadata:
+      labels:
+        app: echo
+    spec:
+      containers:
+      - name: echo
+        image: us-central1-docker.pkg.dev/echo-hana/echoappregistry/echo_hana:latest
+        ports:
+        - containerPort: 3000        
+        env:
+          - name: MONGODBURL
+            valueFrom:
+              secretKeyRef:
+                name: secret-dburl
+                key: mongodburl
+        volumeMounts:
+        - name: config-vol
+          mountPath: "/app/config/default.yaml"
+          subPath: "default.yaml"
+          readOnly: true
+      volumes:
+      - name: config-vol
+        configMap:
+          name: mongodb-configmap
+

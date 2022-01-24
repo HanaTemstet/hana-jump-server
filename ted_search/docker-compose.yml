@@ -1,0 +1,27 @@
+version: "3.0"
+
+services:
+
+  jenkins:
+    image: public.ecr.aws/c7o8u9c1/adir-jenkins:jen-jdk8
+    volumes:
+      - jenkins_home:/var/jenkins_home 
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "80:8080"
+
+  
+  gitlab:
+    image: gitlab/gitlab-ee:latest
+    ports:
+      - '8080:80'
+    volumes:
+      - gl-config:/etc/gitlab
+      - gl-logs:/var/log/gitlab
+      - gl-data:/var/opt/gitlab
+  
+volumes:
+  gl-config:
+  gl-logs:
+  gl-data:
+  jenkins_home:

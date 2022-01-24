@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.org/proxy-connect-timeout: "90s"
+  name: mongo-express
+spec:
+  rules:
+    - host: echohana1.tk 
+      http: 
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: echo
+              port:
+                number: 80
+  tls: 
+    - hosts: 
+        - echohana1.tk 
+      secretName: my-tls-secret
